@@ -45,7 +45,7 @@ function City (location, data) {
 }
 
 function Forcast (day) {
-  this.forcast = day.summary;
+  this.forecast = day.summary;
   let date = new Date(day.time);
   this.time = date.toDateString();
 }
