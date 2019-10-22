@@ -10,12 +10,12 @@ const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => console.log(`App is on port ${PORT}`));
 
 app.get('/location', (request, responce) => {
-  responce.send('Im Alive');
   const location = request.query.data;
   const data = require('./data/geo.json');
 
   const city = new City(location, data)
-  console.log(city);
+
+  responce.send(city);
 });
 
 app.get('*', (request, responce) => {
