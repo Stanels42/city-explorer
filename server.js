@@ -1,55 +1,63 @@
 'use strict';
 
+// Import nessary packages
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+// Set up the appication
 const app = express();
-
 app.use(cors());
+
+// Set Port and fall back
 const PORT = process.env.PORT || 3003;
 
-app.listen(PORT, () => console.log(`App is on port ${PORT}`));
 
 //Get the location and name to be used else where
-app.get('/location', (request, responce) => {
-
-  const location = request.query.data;
-  const data = require('./data/geo.json');
-
-  const city = new City(location, data)
-
-  responce.send(city);
-
-});
+app.get('/location', handleLocation);
 
 //Create an array of the weather and return that to the webpage
-app.get('/weather', (request, responce) => {
+app.get('/weather', handleWeather);
+
+
+//404 all unwanted extentions
+app.get('*', (request, responce) => {
+  pathError(responce)
+});
+
+
+function handleLocation (request, response) {
+
+  try {
+
+    const location = request.query.data;
+    const data = require('./data/geo.json');
+
+    const cityData = new City(location, data);
+
+    response.send(cityData);
+
+  } catch (error) {
+    serverError(response, error);
+  }
+}
+
+function handleWeather (request, response) {
 
   try {
 
     const data = require('./data/darksky.json');
-    const forcastList = [];
 
-    data.daily.data.forEach(dailyWeather => {
-      forcastList.push(new Forcast(dailyWeather));
-    });
+    const forcastList = data.daily.data.map(dailyWeather => new Forcast(dailyWeather));
 
-    responce.send(forcastList);
+    response.send(forcastList);
 
   } catch(error){
-    console.error(error);
-
-
-
+    serverError(response, error);
   }
-});
+}
 
-//404 all unwanted extentions
-app.get('*', (request, responce) => {
-  responce.status(404);
-});
-
+// Constructor Functions
 function City (location, data) {
 
   this.search_query = location;
@@ -66,3 +74,14 @@ function Forcast (day) {
   this.time = date.toDateString();
 
 }
+
+function serverError (response, error = '404 Bad Pathway') {
+  response.status(500).send(error);
+}
+
+function pathError (response, error) {
+  response.status(404).send(error);
+}
+
+// Turn on the Server
+app.listen(PORT, () => console.log(`App is on port ${PORT}`));
