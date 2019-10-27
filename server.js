@@ -22,7 +22,7 @@ app.get('/weather', handleWeather);
 
 //404 all unwanted extentions
 app.get('*', (request, responce) => {
-  pathError(responce)
+  pathError(responce);
 });
 
 
@@ -75,11 +75,11 @@ function Forcast (day) {
 
 }
 
-function serverError (response, error = '404 Bad Pathway') {
+function serverError (response, error) {
   response.status(500).send(error);
 }
 
-function pathError (response, error) {
+function pathError (response, error = '404 Bad Pathway') {
   response.status(404).send(error);
 }
 
