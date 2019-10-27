@@ -76,11 +76,13 @@ function Forcast (day) {
 }
 
 function serverError (response, error) {
-  response.status(500).send(error);
+  response.status(500).send('Server Error');
+  console.error(error);
 }
 
-function pathError (response, error = '404 Bad Pathway') {
-  response.status(404).send(error);
+function pathError (response, error) {
+  response.status(404).send('404 Bad Pathway');
+  console.error(error);
 }
 
 // Turn on the Server
